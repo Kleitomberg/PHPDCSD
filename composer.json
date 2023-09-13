@@ -1,0 +1,26 @@
+{
+    "name": "kleitomberg/phpdcsd",
+    "description": "Detecção Code Smells Symfony Doctrine",
+    "autoload": {
+        "psr-4": {
+            "Phpdcsd\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Kleitomberg",
+            "email": "51670381+Kleitomberg@users.noreply.github.com"
+        }
+    ],
+    "require-dev": {
+        "phpstan/phpstan": "^1.10"
+    },
+    "scripts": {
+        "run-test": "vendor/bin/phpstan analyse",
+        "run-test-verbose": "vendor/bin/phpstan analyse src -v",
+        "clear-cache": "vendor/bin/phpstan clear-result-cache"
+    },
+    "require": {
+        "nikic/php-parser": "^4.17"
+    }
+}

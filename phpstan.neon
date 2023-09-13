@@ -1,0 +1,12 @@
+includes:
+	- rules.neon
+
+parameters:
+    editorUrl: 'vscode://file/%%file%%:%%line%%'
+    customRulesetUsed: true # define que o ruleset customizado será usado
+    excludePaths:
+        - src/Rules/
+        #- src/Tests
+    paths:
+        - src/Tests
+

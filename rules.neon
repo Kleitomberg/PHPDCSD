@@ -1,0 +1,5 @@
+services:
+  -
+    class: Phpdcsd\Rules\Nmoreonequeries
+    tags:
+      - phpstan.rules.rule

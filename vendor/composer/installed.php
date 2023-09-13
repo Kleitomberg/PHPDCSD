@@ -1,0 +1,41 @@
+<?php return array(
+    'root' => array(
+        'name' => 'kleitomberg/phpdcsd',
+        'pretty_version' => '1.0.0+no-version-set',
+        'version' => '1.0.0.0',
+        'reference' => NULL,
+        'type' => 'library',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'dev' => true,
+    ),
+    'versions' => array(
+        'kleitomberg/phpdcsd' => array(
+            'pretty_version' => '1.0.0+no-version-set',
+            'version' => '1.0.0.0',
+            'reference' => NULL,
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'nikic/php-parser' => array(
+            'pretty_version' => 'v4.17.1',
+            'version' => '4.17.1.0',
+            'reference' => 'a6303e50c90c355c7eeee2c4a8b27fe8dc8fef1d',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../nikic/php-parser',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'phpstan/phpstan' => array(
+            'pretty_version' => '1.10.33',
+            'version' => '1.10.33.0',
+            'reference' => '03b1cf9f814ba0863c4e9affea49a4d1ed9a2ed1',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../phpstan/phpstan',
+            'aliases' => array(),
+            'dev_requirement' => true,
+        ),
+    ),
+);
