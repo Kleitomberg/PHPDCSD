@@ -90,6 +90,7 @@ class Nmoreonequeries implements \PHPStan\Rules\Rule #class que implementa a int
                 foreach($properties as $properti){
                 $propertyName = $properti->getName(); // Nome da propriedade
                 $annotations = $properti->getAttributes(); // Pega as anotações da propriedade
+                $lineProperty = $this->getLineProperty($node,$propertyName); // Pega a linha da propriedade
 
                 foreach($annotations as $annotation){
 
@@ -111,7 +112,7 @@ class Nmoreonequeries implements \PHPStan\Rules\Rule #class que implementa a int
                                     $parametro,
                                     $propertyName
                                 ))
-
+                                    ->line($lineProperty)
                                     ->identifier('n_plus_one_queries_problem')
                                     ->build();
 
@@ -136,7 +137,7 @@ class Nmoreonequeries implements \PHPStan\Rules\Rule #class que implementa a int
                                     $parametro,
                                     $propertyName
                                 ))
-
+                                    ->line($lineProperty)
                                     ->identifier('n_plus_one_queries_problem')
                                     ->build();
 
@@ -168,6 +169,17 @@ class Nmoreonequeries implements \PHPStan\Rules\Rule #class que implementa a int
         return false;
     }
 
+    private function getLineProperty($node,$propertyname)
+    {
+        $properties = $node->getProperties();
+        foreach ($properties as $property) {
+            $propertyName = $property->props[0]->name->name;
+            if ($propertyName == $propertyname) {
+                $line = $property->getStartLine();
+                return $line;
+            }
+        }
+    }
 
     #função que verifica se a classe tem eager
     private function hasEagerAnnotation(Node\Stmt\Class_ $classNode, $file_path): bool
