@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Entity;
+#namespace App\Entity;
+namespace Phpdcsd\Tests\Entity;
 
 use App\Repository\ContaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -21,7 +22,7 @@ class Conta
     #[ORM\Column]
     private ?float $saldo = null;
 
-    #[ORM\ManyToOne(inversedBy: 'contas')]
+    #[ORM\ManyToOne()]
     private ?User $usuario = null;
 
     #[ORM\ManyToOne(inversedBy: 'contas')]

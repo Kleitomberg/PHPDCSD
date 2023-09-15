@@ -3,7 +3,8 @@
     "description": "Detecção Code Smells Symfony Doctrine",
     "autoload": {
         "psr-4": {
-            "Phpdcsd\\": "src/"
+            "Phpdcsd\\": "src/",
+            "Phpdcsd\\Tests\\": "tests/"
         }
     },
     "authors": [
@@ -18,9 +19,11 @@
     "scripts": {
         "run-test": "vendor/bin/phpstan analyse",
         "run-test-verbose": "vendor/bin/phpstan analyse src -v",
+        "run-debug": "vendor/bin/phpstan analyse --debug",
         "clear-cache": "vendor/bin/phpstan clear-result-cache"
     },
     "require": {
-        "nikic/php-parser": "^4.17"
+        "nikic/php-parser": "^4.17",
+        "doctrine/annotations": "^2.0"
     }
 }

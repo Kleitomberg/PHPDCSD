@@ -2,6 +2,8 @@
 
 namespace Phpdcsd\Rules;
 
+#autoload classes
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
@@ -10,6 +12,8 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 
+use PhpParser\Node\Stmt\Property;
+use ReflectionClass;
 
 /**
  * @implements \PHPStan\Rules\Rule<\PhpParser\Node\Stmt\Class_>
@@ -38,11 +42,12 @@ class Nmoreonequeries implements \PHPStan\Rules\Rule #class que implementa a int
     public function processNode(Node $node, Scope $scope): array
     {
 
-        $entity_has_eager = false;
         $className = $node->name->name;
         $methods = $node->getMethods();
 
+
         # verifica se é um controller
+
         if ($this->isControllerClass($node)) {
             $entityName = substr($className, 0, -10);
 
@@ -50,9 +55,6 @@ class Nmoreonequeries implements \PHPStan\Rules\Rule #class que implementa a int
 
             if ($hasFindAllWithForeach) {
 
-                echo "$this->lineForeach \n";
-                echo "$this->lineMethod \n";
-                echo "$this->method \n";
                 $solutions = [
                     "I - Utilizar carregamento ansioso (eager loading) para relacionamentos necessários.",
                     "II - Escrever consultas personalizadas com DQL (Doctrine Query Language) para obter dados de forma otimizada.",
@@ -72,38 +74,82 @@ class Nmoreonequeries implements \PHPStan\Rules\Rule #class que implementa a int
             }
         }
 
-
-             /*
         # verifica se é uma entidade
+
         if($this->isEntityClass($node)){
-            # verifica se a entidade tem eager
+            # encontrar relacionameto OneToMany em uma entidade e vertificar se a entidade relacionada tem o relacionamento ManyToOne com a entidade atual
 
-            if($this->hasEagerAnnotation($node, $scope->getFile())){
-                $entity_has_eager = true;
-            }
-                #pegar o controller da entidade antes de criar a entidade
+            $namespace = $node->namespacedName->toString();
+            $className = $node->name->name;
+            $reflectionClass = new \ReflectionClass($namespace);
 
-                $controller = null;
+            $properties = $reflectionClass->getProperties(); // Pega as propriedades da classe
+            $parametrosOneToMany = ["targetEntity", "mappedBy"]; // declaração de array de parâmetros OneToMany necessários
+            $parametrosManyToOne = ["inversedBy"]; // declaração de array de parâmetros ManyToOne necessários
 
-                foreach($this->controllers as $c){
-                    if($c->entityName == $className){
-                        $controller = $c;
+                foreach($properties as $properti){
+                $propertyName = $properti->getName(); // Nome da propriedade
+                $annotations = $properti->getAttributes(); // Pega as anotações da propriedade
+
+                foreach($annotations as $annotation){
+
+                    $annotationName = $annotation->getName(); // Nome da anotação
+                    $annotationParameters = $annotation->getArguments(); // Parâmetros da anotação
+
+                    // Verifica se a anotação é OneToMany
+                    if ($annotationName == "Doctrine\ORM\Mapping\OneToMany") {
+
+                        //se não tiver os parâmetros necessários, retorna erro
+                        foreach ($parametrosOneToMany as $parametro) {
+                            if (!array_key_exists($parametro, $annotationParameters)) {
+                                echo "O parâmetro $parametro é necessário na anotação OneToMany \n";
+
+                                #buiilderError
+                                $errorMessage = RuleErrorBuilder::message(sprintf(
+                                    "Possível problema de N+1 queries devido a um relacionamento unilateral.\nA anotação OneToMany na classe de entidade '%s' deve incluir o parâmetro '%s' na propriedade '%s'.\n",
+                                    $className,
+                                    $parametro,
+                                    $propertyName
+                                ))
+
+                                    ->identifier('n_plus_one_queries_problem')
+                                    ->build();
+
+                                    return [$errorMessage];
+                            }
+                        }
+                    }
+
+                    // Verifica se a anotação é ManyToOne
+                    if ($annotationName == "Doctrine\ORM\Mapping\ManyToOne") {
+
+                        //se não tiver os parâmetros necessários, retorna erro
+                        foreach ($parametrosManyToOne as $parametro) {
+                            if (!array_key_exists($parametro, $annotationParameters)) {
+                                echo "O parâmetro $parametro é necessário na anotação ManyToOne \n";
+
+                                #buiilderError
+                                $errorMessage = RuleErrorBuilder::message(sprintf(
+                                    "Possível problema de N+1 queries devido a um relacionamento unilateral.\nA anotação ManyToOne na classe de entidade '%s' deve incluir o parâmetro '%s' na propriedade '%s'.\n",
+
+                                    $className,
+                                    $parametro,
+                                    $propertyName
+                                ))
+
+                                    ->identifier('n_plus_one_queries_problem')
+                                    ->build();
+
+                                    return [$errorMessage];
+                            }
+                        }
                     }
                 }
-                #criar a entidade e adicionar no array de entidades
-                if ($controller !== null){
-                    $classEntity = new ClassEntity($className, $methods, $entity_has_eager, $controller);
-                }
 
-                #atuaizar também o controller
-
-                #$controller->setEntity($classEntity);
-
-                #atuializar o array de entidades
-                $this->entidades[] = $classEntity;
+            }
 
 
-        }   */
+        }
 
 
         return [];
@@ -113,14 +159,16 @@ class Nmoreonequeries implements \PHPStan\Rules\Rule #class que implementa a int
     #função que verifica se a classe é uma entidade
     private function isEntityClass(Node\Stmt\Class_ $node): bool
     {
-        $className = $node->name->name;
-        if ($node->namespacedName->toString() == "App\Entity\\".$className)
-        {
+        #$className = $node->name->name;
+        $namespace = $node->namespacedName->toString();
+        if (strpos($namespace, "\Entity") !== false) {
             return true; // Substitua por sua lógica real
         }
 
         return false;
     }
+
+
     #função que verifica se a classe tem eager
     private function hasEagerAnnotation(Node\Stmt\Class_ $classNode, $file_path): bool
     {

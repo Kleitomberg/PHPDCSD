@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Entity;
+#namespace App\Entity;
+namespace Phpdcsd\Tests\Entity;
 
 use App\Repository\TransacaoRepository;
-use Doctrine\DBAL\Types\Types;
+#use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TransacaoRepository::class)]
@@ -20,19 +21,16 @@ class Transacao
     #[ORM\Column(length: 255)]
     private ?string $valor = null;
 
+    /*
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $data = null;
-
+*/
     #[ORM\ManyToOne(inversedBy: 'transacaos')]
     private ?Conta $destinatario = null;
 
     #[ORM\ManyToOne(inversedBy: 'transacaos')]
     private ?Conta $remetente = null;
 
-    public function __construct()
-    {
-        $this->data = new \DateTime();
-    }
 
     public function getId(): ?int
     {
@@ -59,18 +57,6 @@ class Transacao
     public function setValor(string $valor): self
     {
         $this->valor = $valor;
-
-        return $this;
-    }
-
-    public function getData(): ?\DateTimeInterface
-    {
-        return $this->data;
-    }
-
-    public function setData(\DateTimeInterface $data): self
-    {
-        $this->data = $data;
 
         return $this;
     }

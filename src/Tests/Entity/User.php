@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Entity;
+#namespace App\Entity;
+namespace Phpdcsd\Tests\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -13,7 +14,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -32,6 +33,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+   /**
+     * SÓ UM TESTE PARA VER SE FUNCIONA
+     */
     #[ORM\OneToMany(mappedBy: 'usuario', targetEntity: Conta::class)]
     private Collection $contas;
 
@@ -57,7 +61,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->Nome;
 
-    
+
     }
 
     public function getId(): ?int

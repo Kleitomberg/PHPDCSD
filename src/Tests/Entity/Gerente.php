@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Entity;
+#namespace App\Entity;
+namespace Phpdcsd\Tests\Entity;
 
 use App\Repository\GerenteRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -23,7 +24,7 @@ class Gerente
     public function __toString()
     {
         return $this->nome;
-        
+
     }
 
 
@@ -56,7 +57,7 @@ class Gerente
         return $this;
     }
 
-    
+
 
 
 }

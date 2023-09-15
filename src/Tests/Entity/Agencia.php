@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Entity;
+#namespace App\Entity;
+namespace Phpdcsd\Tests\Entity;
 
 use App\Repository\AgenciaRepository;
 use Doctrine\Common\Collections\ArrayCollection;

@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Entity;
+#namespace App\Entity;
+namespace Phpdcsd\Tests\Entity;
 
 use App\Repository\TipoContaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,7 +19,7 @@ class TipoConta
     #[ORM\Column(length: 255)]
     private ?string $tipo = null;
 
-    #[ORM\OneToMany(mappedBy: 'tipo', targetEntity: Conta::class)]
+    #[ORM\OneToMany(targetEntity: Conta::class)]
     private Collection $contas;
 
     public function __construct()
