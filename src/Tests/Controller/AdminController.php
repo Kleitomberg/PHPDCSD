@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Controller;
+#namespace App\Controller;
+namespace Phpdcsd\Tests\Controller;
 
 use App\Entity\Agencia;
 use App\Entity\Conta;
@@ -18,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-class AdminController extends AbstractController
+class AdminController //extends AbstractController
 {
     #[Route('/admin', name: 'app_admin')]
     public function index(UserRepository $userRepository, AgenciaRepository $agenciaRepository, GerenteRepository $gerenteRepository, ContaRepository $contaRepository ): Response
@@ -27,7 +28,7 @@ class AdminController extends AbstractController
         $agencias = $agenciaRepository->findAll();
         $gerentes = $gerenteRepository->findAll();
         $contas = $contaRepository->findAll();
-        
+
 
 
         return $this->render('admin/index.html.twig', [
@@ -62,11 +63,11 @@ class AdminController extends AbstractController
 
             $user->setRoles(['ROLE_GERENTE']);
             $user->setPassword($userPasswordHasher->hashPassword($user, $request->request->get('password')));
-            
+
             $gerente = new Gerente();
-            $gerente->setUser($user);   
-            $gerente->setNome($request->request->get('nome'));         
-            
+            $gerente->setUser($user);
+            $gerente->setNome($request->request->get('nome'));
+
 
             $entityManager->persist($gerente);
             $entityManager->flush();
@@ -89,7 +90,7 @@ class AdminController extends AbstractController
             $senha = $request->request->get('password');
             $user->setPassword(
             $userPasswordHasher->hashPassword($user,$senha));
-            
+
             $gerente->setNome($request->request->get('nome'));
 
             $entityManager->flush();
@@ -131,19 +132,19 @@ class AdminController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            
+
             $agencia = $form->getData();
             $entityManagerInterface->persist($agencia);
             $entityManagerInterface->flush();
             return $this->redirectToRoute('app_agencia');
         }
-    
 
-        
+
+
         return $this->render('admin/agencia_create.twig', [
             'agenciaForm' => $form->createView(),
             'page' => 'agencias',
-            
+
         ]);
     }
 
@@ -166,19 +167,19 @@ class AdminController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            
+
             $conta = $form->getData();
             $entityManagerInterface->persist($conta);
             $entityManagerInterface->flush();
             return $this->redirectToRoute('app_conta');
         }
-    
 
-        
+
+
         return $this->render('admin/conta_create.twig', [
             'contaForm' => $form->createView(),
             'page' => 'contas',
-            
+
         ]);
     }
 
@@ -188,7 +189,7 @@ class AdminController extends AbstractController
         if ($request->isMethod('POST')) {
             $conta->setNumero($request->request->get('numero'));
             $conta->setSaldo($request->request->get('saldo'));
-            
+
 
             $entityManager->flush();
             return $this->redirectToRoute('app_admin_contas');
@@ -198,5 +199,5 @@ class AdminController extends AbstractController
             'conta' => $conta,
         ]);
     }
-    
+
 }

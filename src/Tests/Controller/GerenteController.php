@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Controller;
+#namespace App\Controller;
+namespace Phpdcsd\Tests\Controller;
 
 use App\Entity\Gerente;
 use App\Entity\Transacao;
@@ -17,37 +18,37 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-class GerenteController extends AbstractController
+class GerenteController //extends AbstractController
 {
     #[Route('/gerente/{gerente}', name: 'app_gerente')]
     public function index(AgenciaRepository $agenciaRepository, $gerente, GerenteRepository $gerenteRepository, UserRepository $userRepository, ContaRepository $contaRepository, TransacaoRepository $transacaoRepository): Response
-    {   
+    {
 
-       
+
 
         $user = $userRepository->find($gerente);
         $gerente = $gerenteRepository->findOneBy(['user' => $user]);
         $agencia = $agenciaRepository->findOneBy(['gerente' => $gerente->getId()]);
-        
+
         $contas = $contaRepository->findBy(['agencia' => $agencia->getId()]);
-        
+
         $contas_ativas = $contaRepository->findBy(['agencia' => $agencia->getId(), 'active' => "1"]);
 
         $contas_inativas = $contaRepository->findBy(['agencia' => $agencia->getId(), 'active' => "0"]);
 
-        
+
         $usuario = $this->getUser();
 
         if ($usuario->getUserIdentifier() != $gerente->getUser()->getEmail()) {
             $this->addFlash('error', 'Você não tem permissão para acessar essa página!');
             return $this->redirectToRoute('app_index');
         }
-        
 
-        
-        
+
+
+
         $clientes = [];
-        
+
         foreach ($contas_ativas as $conta) {
             $cliente = $conta->getUsuario();
             $cliente->getEmail();
@@ -56,21 +57,21 @@ class GerenteController extends AbstractController
         }
 
         #transações da agencia
-        
+
         $transacoes_a = $transacaoRepository->findBy(['destinatario' => $contas_ativas]);
         $transacoes_b = $transacaoRepository->findBy(['remetente' => $contas_ativas]);
 
         $transacoes = array_merge($transacoes_a, $transacoes_b);
-        
 
-        
-        
+
+
+
 
 
         return $this->render('gerente/index.html.twig', [
             'controller_name' => 'GerenteController',
             'agencia' => $agencia,
-            'contas' => $contas,  
+            'contas' => $contas,
             'contas_ativas' => count($contas_ativas),
             'contas_inativas' => count($contas_inativas),
             'clientes' => $clientes,
@@ -93,7 +94,7 @@ class GerenteController extends AbstractController
 
         $entityManager->persist($conta);
         $entityManager->flush();
-        
+
         $gerente = $this->getUser();
         $gerente->getUserIdentifier();
 
@@ -109,13 +110,13 @@ class GerenteController extends AbstractController
     #[Route('/gerente/editarAgencia/{agencia}', name: 'app_agencia_editar')]
     public function editarAgencia(Request $request, UserRepository $userRepository, $agencia, AgenciaRepository $agenciaRepository, EntityManagerInterface $entityManager): Response
     {
-        
+
 
 
 
        if ($request->isMethod('POST')){
         $agencia = $agenciaRepository->find($agencia);
-        
+
         $agencia->setCodigo($request->request->get('codigo'));
         $agencia->setBairro($request->request->get('bairro'));
         $agencia->setCep($request->request->get('cep'));
@@ -124,7 +125,7 @@ class GerenteController extends AbstractController
         $agencia->setNumero($request->request->get('numero'));
         $agencia->setRua($request->request->get('rua'));
         $agencia->setTelefone($request->request->get('telefone'));
-       
+
 
         $entityManager->persist($agencia);
         $entityManager->flush();
@@ -143,14 +144,14 @@ class GerenteController extends AbstractController
     ]);
 
 
-        
+
     }
     #editar cliente
     #[Route('/gerente/editarCliente/{cliente}', name: 'app_cliente_editar')]
     public function editarCliente(Request $request, UserPasswordHasherInterface $userPasswordHasherInterface, UserRepository $userRepository, $cliente, EntityManagerInterface $entityManager): Response
     {
         $user = $userRepository->find($cliente);
-        
+
         if ($request->isMethod('POST')){
             $user->setNome($request->request->get('nome'));
             $user->setCpf($request->request->get('cpf'));
@@ -164,17 +165,17 @@ class GerenteController extends AbstractController
 
                 );
 
-           
+
             $user->setIsVerified(true);
-            
+
             $entityManager->persist($user);
             $entityManager->flush();
-    
+
             $gerente = $this->getUser();
             $gerente->getUserIdentifier();
-    
+
             $gerente = $userRepository->findOneBy(['email' => $gerente->getUserIdentifier()]);
-    
+
             $this->addFlash('success', 'Cliente editado com sucesso!');
             return $this->redirectToRoute('app_gerente', ['gerente' => $gerente->getId()]);
            }
@@ -184,7 +185,7 @@ class GerenteController extends AbstractController
             'cliente' => $user,
         ]);
 
-        
+
 
     }
 
@@ -210,12 +211,12 @@ class GerenteController extends AbstractController
     #sacar
     #[Route('/gerente/{gerente}/acessarConta/{conta}/sacar', name: 'app_conta_sacar_gerente')]
     public function sacar(Request $request, $conta, $gerente,UserRepository $userRepository, ContaRepository $contaRepository, TransacaoRepository $transacaoRepository, EntityManagerInterface $entityManager): Response
-    {   
+    {
         $user = $this->getUser();
         $user->getUserIdentifier();
         $gerente = $userRepository->findOneBy(['email' => $user->getUserIdentifier()]);
 
-        
+
         $conta = $contaRepository->find($conta);
         $transacoes = $transacaoRepository->findBy(['destinatario' => $conta]);
         $transacoes_b = $transacaoRepository->findBy(['remetente' => $conta]);
@@ -248,12 +249,12 @@ class GerenteController extends AbstractController
 
     #[Route('/gerente/{gerente}/acessarConta/{conta}/depositar', name: 'app_conta_depositar_gerente')]
     public function depositar(Request $request, $conta, $gerente,UserRepository $userRepository, ContaRepository $contaRepository, TransacaoRepository $transacaoRepository, EntityManagerInterface $entityManager): Response
-    {   
+    {
         $user = $this->getUser();
         $user->getUserIdentifier();
         $gerente = $userRepository->findOneBy(['email' => $user->getUserIdentifier()]);
 
-        
+
         $conta = $contaRepository->find($conta);
         $transacoes = $transacaoRepository->findBy(['destinatario' => $conta]);
         $transacoes_b = $transacaoRepository->findBy(['remetente' => $conta]);
@@ -286,15 +287,15 @@ class GerenteController extends AbstractController
 
     #[Route('/gerente/{gerente}/acessarConta/{conta}/transferir', name: 'app_conta_transferir_gerente')]
     public function transferir(Request $request, $conta, $gerente,UserRepository $userRepository, ContaRepository $contaRepository, TransacaoRepository $transacaoRepository, EntityManagerInterface $entityManager): Response
-    {   
+    {
         $user = $this->getUser();
         $user->getUserIdentifier();
         $gerente = $userRepository->findOneBy(['email' => $user->getUserIdentifier()]);
 
-        
+
         $conta = $contaRepository->find($conta);
 
-        
+
         $transacoes = $transacaoRepository->findBy(['destinatario' => $conta]);
         $transacoes_b = $transacaoRepository->findBy(['remetente' => $conta]);
 

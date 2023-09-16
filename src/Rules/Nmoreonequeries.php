@@ -107,7 +107,7 @@ class Nmoreonequeries implements \PHPStan\Rules\Rule #class que implementa a int
 
                                 #buiilderError
                                 $errorMessage = RuleErrorBuilder::message(sprintf(
-                                    "Possível problema de N+1 queries devido a um relacionamento unilateral.\nA anotação OneToMany na classe de entidade '%s' deve incluir o parâmetro '%s' na propriedade '%s'.\n",
+                                    "\nPossível problema de N+1 queries devido a um relacionamento unilateral.\nA anotação OneToMany na classe de entidade '%s' deve incluir o parâmetro '%s' na propriedade '%s'.\n",
                                     $className,
                                     $parametro,
                                     $propertyName
@@ -197,8 +197,10 @@ class Nmoreonequeries implements \PHPStan\Rules\Rule #class que implementa a int
     private function isControllerClass(Node\Stmt\Class_ $node): bool
     {
         $className = $node->name->name;
-        if ($node->namespacedName->toString() == "App\Controller\\".$className)
-        {
+        $namespace = $node->namespacedName->toString();
+
+        if (strpos($namespace, "\Controller") !== false) {
+
             return true;
         }
 

@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Controller;
+#namespace App\Controller;
+namespace Phpdcsd\Tests\Controller;
 
 use App\Entity\Transacao;
 use App\Entity\User;
@@ -14,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ContaController extends AbstractController
+class ContaController //extends AbstractController
 {
     #[Route('/conta', name: 'app_conta')]
     public function index(): Response
@@ -47,12 +48,12 @@ class ContaController extends AbstractController
             return $this->redirectToRoute('app_cliente', ['id' => $user->getId()]);
         }
 
-        
+
 
         return $this->render('conta/novaConta.twig', [
             'controller_name' => 'ContaController',
             'contaForm' => $form->createView(),
-            
+
         ]);
     }
 
@@ -81,21 +82,21 @@ class ContaController extends AbstractController
                 $this->addFlash('error', 'Agencia não encontrada!');
                 return $this->redirectToRoute('app_index');
             }
-            
 
-           
+
+
             $conta = $contaRepository->findOneBy(array('numero' => $numero, 'agencia' => $agenciaa));
 
             if (!$conta) {
                 $this->addFlash('error', 'Conta não encontrada!');
                 return $this->redirectToRoute('app_index');
             }
-            
-            
-           
+
+
+
             $conta->setSaldo($conta->getSaldo() + $request->request->get('valor'));
 
-           
+
             $entityManager->persist($conta);
             $entityManager->flush();
             $transacao = new Transacao();

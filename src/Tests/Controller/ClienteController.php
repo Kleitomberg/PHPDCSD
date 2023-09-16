@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Controller;
+#namespace App\Controller;
+namespace Phpdcsd\Tests\Controller;
 
 use App\Entity\Transacao;
 use App\Entity\User;
@@ -12,11 +13,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ClienteController extends AbstractController
+class ClienteController //extends AbstractController
 {
     #[Route('/cliente/{id}', name: 'app_cliente')]
     public function index(User $user, ContaRepository $contaRepository): Response
-    {   
+    {
         $usuario = $this->getUser();
 
         if ($usuario->getUserIdentifier() != $user->getEmail()) {
@@ -24,7 +25,7 @@ class ClienteController extends AbstractController
             return $this->redirectToRoute('app_index');
         }
         $contas = $contaRepository->findBy(['usuario' => $user->getId(), 'active' => true]);
-        
+
         return $this->render('cliente/index.html.twig', [
             'controller_name' => 'ClienteController',
             'contas' => $contas,
@@ -56,12 +57,12 @@ class ClienteController extends AbstractController
             $this->addFlash('error', 'Conta não encontrada!');
             return $this->redirectToRoute('app_index');
         }
-        #post 
+        #post
         if ($request->isMethod('POST')) {
             $valor = $request->request->get('valor');
             if ($valor <= 0) {
                 $this->addFlash('error', 'Valor inválido!');
-                
+
             }
             else{
                 $conta->creditar($valor);
@@ -81,7 +82,7 @@ class ClienteController extends AbstractController
         return $this->redirect($request->headers->get('referer'));
 
     }
-    
+
     #transferecia
     #[Route('/cliente/{id}/conta/{conta}/transferir', name: 'app_cliente_conta_transferir')]
     public function transferir(Request $request, $conta, User $user, ContaRepository $contaRepository, EntityManagerInterface $entityManager):Response
@@ -90,7 +91,7 @@ class ClienteController extends AbstractController
         $minhaconta = $contaRepository->findOneBy(['usuario' => $user->getId(), 'active' => true, 'id' => $conta]);
 
         if ($request->isMethod('POST')) {
-            
+
             $contaDestino = $contaRepository->findOneBy(['numero' => $request->request->get('conta')]);
             $valor = $request->request->get('valor');
 
@@ -104,9 +105,9 @@ class ClienteController extends AbstractController
                 $this->addFlash('error', 'Saldo insuficiente!');
             }
             else{
-                
+
                 $minhaconta->transferir($valor, $contaDestino);
-                
+
                 $entityManager->persist($minhaconta);
                 $entityManager->persist($contaDestino);
                 $transacao = new Transacao();
@@ -133,7 +134,7 @@ class ClienteController extends AbstractController
         $minhaconta = $contaRepository->findOneBy(['usuario' => $user->getId(), 'active' => true, 'id' => $conta]);
 
         if ($request->isMethod('POST')) {
-            
+
             $valor = $request->request->get('valor');
 
             if ($valor <= 0) {
@@ -145,7 +146,7 @@ class ClienteController extends AbstractController
             else{
 
                 $minhaconta->debitar($valor);
-                
+
                 $entityManager->persist($minhaconta);
 
                 $transacao = new Transacao();
@@ -157,12 +158,12 @@ class ClienteController extends AbstractController
                 $this->addFlash('success', 'Saque realizado com sucesso!');
                 return $this->redirectToRoute('app_cliente_conta', ['id' => $user->getId(), 'conta' => $minhaconta->getId()]);
 
-                
+
             }
             return $this->redirect($request->headers->get('referer'));
         }
-    }       
-    
+    }
+
     #app_cliente_conta_encerrar
     #[Route('/cliente/{id}/conta/{conta}/encerrar', name: 'app_cliente_conta_encerrar')]
     public function encerrar(Request $request, $conta, User $user, ContaRepository $contaRepository, TransacaoRepository $transacaoRepository, EntityManagerInterface $entityManager):Response
@@ -170,18 +171,18 @@ class ClienteController extends AbstractController
 
         $minhaconta = $contaRepository->findOneBy(['usuario' => $user->getId(), 'active' => true, 'id' => $conta]);
 
-            
+
             $minhaconta->setActive(false);
 
-           
-            
+
+
             $saldo = $minhaconta->getSaldo();
             if ($saldo > 0) {
                 $this->addFlash('error', 'Não é possível encerrar uma conta com saldo positivo!');
                 return $this->redirectToRoute('app_cliente_conta', ['id' => $user->getId(), 'conta' => $minhaconta->getId()]);
             }
-                
-           
+
+
             $transaocoes = $transacaoRepository->findBy(['remetente' => $minhaconta->getId()]);
             foreach ($transaocoes as $transacao) {
                 $transacao->setRemetente(null);
@@ -189,11 +190,11 @@ class ClienteController extends AbstractController
             }
             $contaRepository->remove($minhaconta);
 
-            
+
             $entityManager->flush();
             $this->addFlash('success', 'Conta encerrada com sucesso!');
             return $this->redirectToRoute('app_cliente', ['id' => $user->getId()]);
-    
+
     }
-    
+
 }

@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Controller;
+#namespace App\Controller;
+namespace Phpdcsd\Tests\Controller;
 
 use App\Entity\User;
 use App\Entity\Conta;
@@ -20,7 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
-class RegistrationController extends AbstractController
+class RegistrationController //extends AbstractController
 {
     private EmailVerifier $emailVerifier;
 
@@ -33,32 +34,32 @@ class RegistrationController extends AbstractController
     public function register(Request $request, UserRepository $userRepository, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, ContaRepository $contaRepository): Response
     {
         $user_loged = $this->getUser();
-        
+
 
        if ($user_loged){
         $us = $userRepository->findOneBy(['email' => $user_loged->getUserIdentifier()]);
         return $this->redirectToRoute('app_conta_criar', ['user' =>$us->getId() ]);
 
-        
+
        }
 
         $user = new User();
-        
+
         $form = $this->createForm(
-            RegistrationFormType::class, $user, 
-            
+            RegistrationFormType::class, $user,
+
         );
 
         $form->handleRequest($request);
 
-        
+
         if ($form->isSubmitted() && $form->isValid()) {
 
             // encode the plain password
 
             #if exist user
-            
-        
+
+
 
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
@@ -71,24 +72,24 @@ class RegistrationController extends AbstractController
             $cpf = $form->get('cpf')->getData();
 
             $existUser = $userRepository->findOneBy(['cpf' => $cpf]);
-            
+
             if ($existUser){
                 $user = $existUser;
                 $contaExistente = $contaRepository->findOneBy(['usuario' => $existUser->getId(),'active' => true]);
-                
+
             }else{
                 $contaExistente = false;
             }
 
 
-            
+
 
             if ($contaExistente){
                 return $this->redirectToRoute('app_conta_criar', ['user' => $existUser->getId()]);
             }
-           
+
             $entityManager->persist($user);
-            
+
 
             $agencia = $form->get('conta')->getData();
            # dd($agencia);
@@ -98,21 +99,21 @@ class RegistrationController extends AbstractController
             }else{
                 $conta->setUsuario($user);
             }
-            
+
             $conta->setSaldo(0);
             $conta->setNumero(rand(100000, 999999));
             $conta->setAgencia($agencia->getAgencia());
             $conta->setTipo($agencia->getTipo());
 
-          
 
-            
+
+
             $conta->setActive(false);
-            
-            
+
+
 
             $entityManager->persist($conta);
-           
+
 
             $entityManager->flush();
 
@@ -125,7 +126,7 @@ class RegistrationController extends AbstractController
                     ->htmlTemplate('registration/confirmation_email.html.twig')
             );
             // do anything else you need here, like send an email
-                  
+
 
             return $this->redirectToRoute('app_login');
         }

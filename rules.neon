@@ -1,5 +1,10 @@
 services:
   -
+    class: Phpdcsd\Rules\ExcessiveData
+    tags:
+      - phpstan.rules.rule
+
+  -
     class: Phpdcsd\Rules\Nmoreonequeries
     tags:
       - phpstan.rules.rule
