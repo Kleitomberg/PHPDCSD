@@ -1,6 +1,8 @@
 {
     "name": "kleitomberg/phpdcsd",
     "description": "Detecção Code Smells Symfony Doctrine",
+    "type": "library",
+    "license": "GPL-3.0-or-later",
     "autoload": {
         "psr-4": {
             "Phpdcsd\\": "src/",
@@ -20,10 +22,14 @@
         "run-test": "vendor/bin/phpstan analyse",
         "run-test-verbose": "vendor/bin/phpstan analyse src -v",
         "run-debug": "vendor/bin/phpstan analyse --debug",
-        "clear-cache": "vendor/bin/phpstan clear-result-cache"
+        "clear-result-cache": "vendor/bin/phpstan clear-result-cache"
     },
     "require": {
+        "php": ">=7.2",
         "nikic/php-parser": "^4.17",
         "doctrine/annotations": "^2.0"
+    },
+    "config": {
+        "process-timeout": 2000
     }
 }
