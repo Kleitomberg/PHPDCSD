@@ -22,7 +22,8 @@
         "run-test": "vendor/bin/phpstan analyse",
         "run-test-verbose": "vendor/bin/phpstan analyse src -v",
         "run-debug": "vendor/bin/phpstan analyse --debug",
-        "clear-result-cache": "vendor/bin/phpstan clear-result-cache"
+        "clear-result-cache": "vendor/bin/phpstan clear-result-cache",
+        "phpstan/phpstan": "^1.10"
     },
     "require": {
         "php": ">=7.2",
