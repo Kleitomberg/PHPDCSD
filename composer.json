@@ -22,13 +22,13 @@
         "run-test": "vendor/bin/phpstan analyse",
         "run-test-verbose": "vendor/bin/phpstan analyse src -v",
         "run-debug": "vendor/bin/phpstan analyse --debug",
-        "clear-result-cache": "vendor/bin/phpstan clear-result-cache",
-        "phpstan/phpstan": "^1.10"
+        "clear-result-cache": "vendor/bin/phpstan clear-result-cache"
     },
     "require": {
         "php": ">=7.2",
         "nikic/php-parser": "^4.17",
-        "doctrine/annotations": "^2.0"
+        "doctrine/annotations": "^2.0",
+        "phpstan/phpstan": "^1.10"
     },
     "config": {
         "process-timeout": 2000
